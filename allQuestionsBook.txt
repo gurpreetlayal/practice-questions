@@ -4,7 +4,6 @@
 LC 74. Search a 2D Matrix
 
 Write an efficient algorithm that searches for a value in an m x n matrix.
-
 This matrix has the following properties:
 
 Integers in each row are sorted from left to right.
@@ -120,4 +119,51 @@ public:
 
 ****
 
+23. Merge k Sorted Lists
+Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
+
+class Solution {
+public:
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        if (lists.empty()) {
+            return nullptr;
+        }
+        ListNode* head = nullptr;
+        priority_queue<ListNode*, vector<ListNode*>, Compare> pq;
+        for (auto list: lists) {
+            if (list) pq.push(list);
+        }
+        
+        if (pq.empty()) {
+            return nullptr;
+        }
+        head = pq.top();
+        ListNode* prev = nullptr;
+        while(!pq.empty()) {
+            auto top = pq.top();
+            pq.pop();
+            if (top->next) {
+                pq.push(top->next);
+            }
+            if (prev) { prev->next = top; }
+            prev = top;
+        }
+        return head;
+    }
+    
+    class Compare {
+    public:
+        bool operator()(ListNode* n1, ListNode* n2) {
+            if (n1->val > n2->val) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    };
+};
+
+
+
+****
 
