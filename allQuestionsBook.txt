@@ -9,6 +9,8 @@ This matrix has the following properties:
 Integers in each row are sorted from left to right.
 The first integer of each row is greater than the last integer of the previous row.
 
+
+
 class Solution {
 public:
     bool searchMatrix(vector<vector<int>>& matrix, int target) {
@@ -21,6 +23,9 @@ public:
         }
         int c = matrix[0].size()-1;
         
+        // start from v: [0][c-1] -> [n-1][c-1]
+        // check for target < v. Then do a binary
+        // search of target in vector [x][0->c-1]
         while((r <= matrix.size()-1) && (c >= 0)) {
             if (target == matrix[r][c]) {
                 return true;
@@ -46,11 +51,18 @@ Integers in each column are sorted in ascending from top to bottom.
 EXACTLY SAME AS LC 74
 
 
+MAIN IDEA: Code same as lc 74, but here it will take more of a step down approach, starting from c = N-1, everytime
+checking if val < M[r][c] if so col-- otherwise row++;
+
+
+
 
 ****
 
 LC 54. Spiral Matrix
 Given a matrix of m x n elements (m rows, n columns), return all elements of the matrix in spiral order.
+
+MAIN IDEA: Code is simple enough. Just look at that.
 
 vector<int> spiralOrder(vector<vector<int>>& m) {
         int sr = 0, er = m.size()-1;
@@ -97,11 +109,20 @@ public:
     int kthSmallest(vector<vector<int>>& m, int k) {
         int se = m[0][0];
         int ee = m[m.size()-1][m.size()-1];
-        
+
+        // start from [0][0] -> [n-1][n-1] : binary search space
+        // calculate number of elements which are less that mid value.
+        // if > k, then reduce the search space as start value -> mid
+        // otherwise search between mid + 1 -> end value.
         while(se < ee) {
             int mid = se + (ee - se)/2;
             int num = 0;
             for (int i = 0; i < m.size(); i++) {
+                // calculate number of elements smaller than mid.
+                // lets say 3 elements are less than mid, so this api will
+                // return 3. (0,1,2,3) [3] being mid, but here because 0 is overlooked
+                // so whatever upper_bound returns can be said returns number of numbers
+                // less than mid.
                 num += (upper_bound(m[i].begin(), m[i].end(), mid) - m[i].begin());
             }
             
