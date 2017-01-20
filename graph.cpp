@@ -72,7 +72,7 @@ void printbfs(Graph& g, int sidx) {
     cout << endl;
 }
 
-// Topological ordering is do dfs and reverse the order.
+// Topological ordering is do post order traversal(slightly changed dfs, since dfs is pre order)  and reverse the order.
 void printtopo(Graph& g) {
 
 }
