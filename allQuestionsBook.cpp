@@ -804,5 +804,315 @@ public:
 BACKTRACKING
 ===========================
 
+LC 46. Permutations
+
+Given a collection of distinct numbers, return all possible permutations.
+
+For example,
+[1,2,3] have the following permutations:
+[
+  [1,2,3],
+  [1,3,2],
+  [2,1,3],
+  [2,3,1],
+  [3,1,2],
+  [3,2,1]
+]
+
+
+class Solution {
+public:
+    vector<vector<int>> permute(vector<int>& nums) {
+        if (nums.size() == 0) {
+            return vector<vector<int>>(0, vector<int>());
+        }
+        
+        vector<int> onep;
+        vector<vector<int>> res;
+        permuteBackTracker(nums, onep, res);
+        return res;
+    }
+    
+    void permuteBackTracker(vector<int>& n, vector<int>& onep, vector<vector<int>>& res) {
+        if (n.empty()) {
+            res.push_back(onep);
+            return;
+        }
+        
+        for (int i = 0; i < n.size(); i++) {
+            auto localonep = onep;
+            onep.push_back(n[i]);
+            auto temp = n;
+            temp.erase(temp.begin() + i);
+            permuteBackTracker(temp, onep, res);
+            
+            onep = localonep;
+        }
+    }
+};
+
+
+***************************************************************************************************
+
+
+LC 79. Word Search
+
+Given a 2D board and a word, find if the word exists in the grid.
+
+The word can be constructed from letters of sequentially adjacent cell, where "adjacent" cells are those horizontally or vertically neighboring. The same letter cell may not be used more than once.
+
+For example,
+Given board =
+
+[
+  ['A','B','C','E'],
+  ['S','F','C','S'],
+  ['A','D','E','E']
+]
+word = "ABCCED", -> returns true,
+word = "SEE", -> returns true,
+word = "ABCB", -> returns false.
+
+MAIN IDEA: Maintain a matrix for marking node as visited. Recursively chose amongst all 4(right,left,up,down) options(if option not marked visited) until end of search string.
+
+
+bool exist(char** b, int r, int c, char* word) {
+    bool** v = (bool**)malloc(sizeof(bool*)*r);
+    for (int i = 0; i < r; i++) {
+        v[i] = (bool*)malloc(sizeof(bool)*c);
+    }
+    resetVisited(v, r, c);
+    bool res = false;
+
+    for (int i = 0; i < r; i++) {
+        for (int j = 0; j < c; j++) {
+            resetVisited(v, r, c);
+            //cache
+            char* cacheword = word;
+
+            res |= search_board(b, r - 1, c - 1, i, j, word, v);
+            if (res) { return res; }
+
+            word = cacheword;
+        }
+    }
+    return res;
+}
+
+bool search_board(char** b, int r, int c, int i, int j, char* word, bool** v) {
+
+    bool res = false;
+    if (*word == '\0') {
+        return true;
+    }
+    
+    if (i > r || i < 0 || j > c || j < 0) {
+        return false;
+    }
+
+    if (*word != '\0' && *word == b[i][j] && v[i][j] == false) {
+        v[i][j] = true;
+        res |= (search_board(b, r, c, i, j - 1, word + 1, v) ||
+                search_board(b, r, c, i, j + 1, word + 1, v) ||
+                search_board(b, r, c, i - 1, j, word + 1, v) ||
+                search_board(b, r, c, i + 1, j, word + 1, v));
+        v[i][j] = false;
+    }
+
+    return res;
+}
+
+void resetVisited(bool** v, int r, int c) {
+    for (int i = 0; i < r; i++) {
+        for (int j = 0; j < c; j++) {
+            v[i][j] = false;
+        }
+    }
+}
+
+
+
+***************************************************************************************************
+
+
+LC 78. Subsets
+
+Given a set of distinct integers, nums, return all possible subsets.
+
+Note: The solution set must not contain duplicate subsets.
+
+For example,
+If nums = [1,2,3], a solution is:
+
+[
+  [3],
+  [1],
+  [2],
+  [1,2,3],
+  [1,3],
+  [2,3],
+  [1,2],
+  []
+]
+
+class Solution {
+public:
+    typedef vector<vector<int>> v2d;
+    typedef vector<int> v1d;
+    vector<vector<int>> subsets(vector<int>& nums) {
+        v2d res;
+        v1d ones;
+        
+        subsetBackTracker(nums, ones, res);
+        return res;
+    }
+    
+    void subsetBackTracker(v1d& v, v1d& ones, v2d& res) {
+        if (v.empty()) {
+            res.push_back(ones);
+            return;
+        }
+        
+        auto cacheones = ones;
+        auto cachev = v;
+        
+        v.erase(v.end() - 1);
+        subsetBackTracker(v, ones, res);
+        
+        v = cachev;
+        ones = cacheones;
+        
+        ones.push_back(*(v.end() - 1));
+        v.erase(v.end() - 1);
+        
+        subsetBackTracker(v, ones, res);
+    }
+};
+
+
+
+***************************************************************************************************
+
+
+LC 131. Palindrome Partitioning
+
+Given a string s, partition s such that every substring of the partition is a palindrome.
+
+Return all possible palindrome partitioning of s.
+
+For example, given s = "aab",
+Return
+
+[
+  ["aa","b"],
+  ["a","a","b"]
+]
+
+class Solution {
+public:
+    typedef vector<vector<string>> v2d;
+    typedef vector<string> v1d;
+    vector<vector<string>> partition(string s) {
+        v2d res;
+        v1d onep;
+        string::iterator itr = s.begin();
+        pBackTracker(s, itr, onep, res);
+        return res;
+    }
+    
+    void pBackTracker(string& s, string::iterator itrdx, v1d& onep, v2d& res) {
+        if (itrdx == s.end()) {
+            res.push_back(onep);
+            return;
+        }
+        
+        for (string::iterator itr = itrdx; itr != s.end(); itr++) {
+            if (!isAnagram(s, itrdx, itr)) {
+                continue;
+            }
+            auto cacheonep = onep;
+            auto itrtemp = itr + 1;
+            
+            string temp(itrdx, itrtemp);
+            onep.push_back(temp);
+
+            pBackTracker(s, itrtemp, onep, res);
+
+            onep = cacheonep;
+        }
+    }
+    
+    bool isAnagram(string& s, string::iterator i1, string::iterator i2) {
+        while (i1 < i2) {
+            if (*i1 != *i2) {
+                return false;
+            }
+            i1++;
+            i2--;
+        }
+        return true;
+    }
+    
+};
+
+
+***************************************************************************************************
+
+
+LC 47. Permutations II
+
+Given a collection of numbers that might contain duplicates, return all possible unique permutations.
+
+For example,
+[1,1,2] have the following unique permutations:
+[
+  [1,1,2],
+  [1,2,1],
+  [2,1,1]
+]
+
+
+class Solution {
+public:
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        
+        vector<int> oneP;
+        vector<vector<int>> result;
+        
+        pBackTracker(nums, oneP, result);
+        return result;
+    }
+    
+    void pBackTracker(vector<int>& v, vector<int>& onep, vector<vector<int>>& res) {
+        if (v.empty()) {
+            res.push_back(onep);
+            return;
+        }
+        
+        set<int> seen;
+        for (int i = 0; i < v.size(); i++) {
+            if (seen.find(v[i]) != seen.end()) {
+                continue;
+            }
+            
+            seen.insert(v[i]);
+            auto cacheonep = onep;
+            auto cachev = v;
+            
+            onep.push_back(v[i]);
+            v.erase(v.begin() + i);
+            
+            pBackTracker(v, onep, res);
+            
+            v = cachev;
+            onep = cacheonep;
+        }
+    }
+};
+
+
+
+***************************************************************************************************
+
 
 
