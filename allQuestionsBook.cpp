@@ -48,7 +48,7 @@ Write an efficient algorithm that searches for a value in an m x n matrix. This 
 Integers in each row are sorted in ascending from left to right.
 Integers in each column are sorted in ascending from top to bottom.
 
-EXACTLY SAME AS LC 74
+EXACTLY SAME AS 74
 
 
 MAIN IDEA: Code same as lc 74, but here it will take more of a step down approach, starting from c = N-1, everytime
@@ -603,6 +603,315 @@ public:
 
 ***************************************************************************************************
 
+
+LC 160. Intersection of Two Linked Lists
+
+Write a program to find the node at which the intersection of two singly linked lists begins.
+
+
+For example, the following two linked lists:
+
+A:          a1 → a2
+                   ↘
+                     c1 → c2 → c3
+                   ↗            
+B:     b1 → b2 → b3
+begin to intersect at node c1.
+
+
+Notes:
+
+If the two linked lists have no intersection at all, return null.
+The linked lists must retain their original structure after the function returns.
+You may assume there are no cycles anywhere in the entire linked structure.
+Your code should preferably run in O(n) time and use only O(1) memory.
+
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        if (headA == nullptr || headB == nullptr) { return nullptr; }
+    
+        int lenA = 0, lenB = 0;
+        auto temp = headA;
+        while (temp) {
+            temp = temp->next;
+            lenA++;
+        }
+    
+        temp = headB;
+        while (temp) {
+            temp = temp->next;
+            lenB++;
+        }
+    
+        int offset = (lenA - lenB);
+        if (lenA < lenB) {
+            offset = lenB - lenA;
+            temp = headB;
+            while (offset) {
+                temp = temp->next;
+                offset--;
+            }
+            headB = temp;
+        } else {
+            temp = headA;
+            while (offset) {
+                temp = temp->next;
+                offset--;
+            }
+            headA = temp;
+        }
+    
+        while (headA && headB && headA->val != headB->val) {
+            headA = headA->next;
+            headB = headB->next;
+        }
+        return headA;
+    }
+};
+
+
+
+***************************************************************************************************
+
+LC 138. Copy List with Random Pointer
+
+A linked list is given such that each node contains an additional random pointer which could point to any node in the list or null.
+
+Return a deep copy of the list.
+
+/**
+ * Definition for singly-linked list with a random pointer.
+ * struct RandomListNode {
+ *     int label;
+ *     RandomListNode *next, *random;
+ *     RandomListNode(int x) : label(x), next(NULL), random(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    typedef RandomListNode rnl;
+    RandomListNode *copyRandomList(RandomListNode *head) {
+        if (!head) {
+            return head;
+        }
+        
+        map<rnl*, int> olMap;
+        map<int, rnl*> nlMap;
+        
+        int i = 1;
+        auto temp = head;
+        while (temp) {
+            olMap[temp] = i++;
+            temp = temp->next;
+        }
+        
+        temp = head;
+        
+        i = 1;
+        rnl *newHead = new rnl(temp->label);
+        nlMap[i++] = newHead;
+        auto prev = newHead;
+        temp = temp->next;
+        while(temp) {
+            auto node = new rnl(temp->label);
+            nlMap[i++] = node;
+            prev->next = node;
+            prev = node;
+            temp = temp->next;
+        }
+        
+        temp = head;
+        auto node = newHead;
+        while (temp && node) {
+            node->random = nlMap[olMap[temp->random]];
+            temp = temp->next;
+            node = node->next;
+        }
+        
+        return newHead;
+    }
+};
+
+
+
+***************************************************************************************************
+
+LC 445. Add Two Numbers II
+
+You are given two non-empty linked lists representing two non-negative integers. The most significant digit comes first and each of their nodes contain a single digit. Add the two numbers and return it as a linked list.
+
+You may assume the two numbers do not contain any leading zero, except the number 0 itself.
+
+Follow up:
+What if you cannot modify the input lists? In other words, reversing the lists is not allowed.
+
+Example:
+
+Input: (7 -> 2 -> 4 -> 3) + (5 -> 6 -> 4)
+Output: 7 -> 8 -> 0 -> 7
+
+
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+       stack<int> s1, s2;
+       
+       if (l1 == nullptr || l2 == nullptr) { return nullptr; }
+       
+       while (l1) {
+           s1.push(l1->val);
+           l1 = l1->next;
+       }
+       
+       while (l2) {
+           s2.push(l2->val);
+           l2 = l2->next;
+       }
+       
+       ListNode* nextNode = nullptr;
+       int c = 0;
+       
+       while (!s1.empty() && !s2.empty()) {
+           ListNode* newNode = new ListNode((s1.top() + s2.top() + c) % 10);
+           c = (s1.top() + s2.top() + c ) / 10;
+           s1.pop();
+           s2.pop();
+           newNode->next = nextNode;
+           nextNode = newNode;
+       }
+       
+       while (!s1.empty()) {
+           ListNode* newNode = new ListNode((s1.top() + c) % 10);
+           c = (s1.top() + c) / 10;
+           s1.pop();
+           newNode->next = nextNode;
+           nextNode = newNode;
+       }
+
+       while (!s2.empty()) {
+           ListNode* newNode = new ListNode((s2.top() + c) % 10);
+           c = (s2.top() + c) / 10;
+           s2.pop();
+           newNode->next = nextNode;
+           nextNode = newNode;
+       }
+
+        if (c > 0) {
+            ListNode* newNode = new ListNode(c);
+            newNode->next = nextNode;
+            nextNode = newNode;
+        }
+        return nextNode;
+    }
+};
+
+
+
+***************************************************************************************************
+
+
+LC 234. Palindrome Linked List 
+
+Given a singly linked list, determine if it is a palindrome.
+
+Follow up:
+Could you do it in O(n) time and O(1) space?
+
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    typedef ListNode node;
+    bool isPalindrome(ListNode* head) {
+        if (head == nullptr || head->next == nullptr) {
+            return true;
+        }
+        node *n1, *n2;
+        n1 = n2 = head;
+        int num = 0;
+        while (n2 != nullptr && n2->next != nullptr) {
+            n1 = n1->next;
+            n2 = n2->next;
+            if (n2) n2 = n2->next;
+        }
+        
+        auto n3 = head;
+        if (n2 == nullptr) {
+            auto n4 = n1;
+            n4 = linkRev(n4);
+            while (n3 != n1 && n4 != nullptr) {
+                if (n3->val != n4->val) {
+                    return false;
+                }
+                n3 = n3->next;
+                n4 = n4->next;
+            }
+        } else if (n2->next == nullptr) {
+            auto n4 = n1->next;
+            n4 = linkRev(n4);
+            while (n3 != n1 && n4 != nullptr) {
+                if (n3->val != n4->val) {
+                    return false;
+                }
+                n3 = n3->next;
+                n4 = n4->next;
+            }
+        }
+        return true;
+    }
+    
+    node* linkRev(node* head) {
+        if (head == nullptr || head->next == nullptr) {
+            return head;
+        }
+        
+        auto t1 = head;
+        auto t2 = head->next;
+        
+        t1->next = nullptr;
+
+        while (t2) {
+            
+            auto t3 = t2->next;
+            t2->next = t1;
+            t1 = t2;
+            t2 = t3;
+        }
+        
+        return t1;
+    }
+};
+
+
+***************************************************************************************************
+
+
 LC 23. Merge k Sorted Lists
 Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
 
@@ -649,6 +958,86 @@ public:
 
 
 ***************************************************************************************************
+
+
+LC 25. Reverse Nodes in k-Group
+
+Given a linked list, reverse the nodes of a linked list k at a time and return its modified list.
+
+k is a positive integer and is less than or equal to the length of the linked list. If the number of nodes is not a multiple of k then left-out nodes in the end should remain as it is.
+
+You may not alter the values in the nodes, only nodes itself may be changed.
+
+Only constant memory is allowed.
+
+For example,
+Given this linked list: 1->2->3->4->5
+
+For k = 2, you should return: 2->1->4->3->5
+
+For k = 3, you should return: 3->2->1->4->5
+
+
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    typedef ListNode node;
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        stack<node*> stk;
+        int curk = k;
+        
+        node* temp = head;
+        node* newHead = nullptr;
+        node* prevl = nullptr;
+        while(temp) {
+            while(temp && curk > 0) {
+                stk.push(temp);
+                temp = temp->next;
+                curk--;
+            }
+            
+            if (curk > 0 && temp == nullptr) {
+                break;
+            }
+
+            if (!newHead) {
+                newHead = stk.top();
+            }
+            
+            while (!stk.empty()) {
+                if (prevl) {
+                    prevl->next = stk.top();
+                    stk.pop();
+                    prevl = prevl->next;
+                } else {
+                    prevl = stk.top();
+                    stk.pop();
+                }
+            }
+            prevl->next = temp;
+            curk = k;
+        }
+        
+        if (!newHead) {
+            newHead = head;
+        }
+        
+        return newHead;
+    }
+};
+
+
+
+***************************************************************************************************
+
 
 ==========================================
 BEST TIME TO BUY AND SELL STOCKS QUESTIONS
