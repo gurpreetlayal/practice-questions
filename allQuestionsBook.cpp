@@ -147,7 +147,7 @@ public:
 // ================================
 
 
-L 70. Climbing Stairs
+LC 70. Climbing Stairs
 
 You are climbing a stair case. It takes n steps to reach to the top.
 
@@ -184,7 +184,7 @@ public:
 ***************************************************************************************************
 
 
-198. House Robber
+LC 198. House Robber
 
 You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security system connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
 
@@ -219,7 +219,7 @@ public:
 ***************************************************************************************************
 
 
-53. Maximum Subarray
+LC 53. Maximum Subarray
 
 Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
 
@@ -292,7 +292,7 @@ int kadane(int *a, int n, int* s, int* e) {
 
 ***************************************************************************************************
 
-338. Counting Bits
+LC 338. Counting Bits
 
 Given a non negative integer number num. For every numbers i in the range 0 ≤ i ≤ num calculate the number of 1's in their binary representation and return them as an array.
 
@@ -336,7 +336,7 @@ public:
 
 ***************************************************************************************************
 
-139. Word Break
+LC 139. Word Break
 
 Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words. You may assume the dictionary does not contain duplicate words.
 
@@ -352,7 +352,6 @@ Basically look for all substrings ending at i starting from 0->i-1. See if they 
 
 DP[i] = DP[j] for all j: 0 ->i-1 if (substr(j,i) is in dictionary)
 
-class Solution {
 public:
     bool wordBreak(string s, unordered_set<string>& dict) {
         vector<bool> cache(s.size() + 1, false);
@@ -378,7 +377,7 @@ public:
 ***************************************************************************************************
 
 
-152. Maximum Product Subarray
+LC 152. Maximum Product Subarray
 
 Find the contiguous subarray within an array (containing at least one number) which has the largest product.
 
@@ -425,7 +424,7 @@ public:
 
 ***************************************************************************************************
 
-96. Unique Binary Search Trees
+LC 96. Unique Binary Search Trees
 
 Given n, how many structurally unique BST's (binary search trees) that store values 1...n?
 
@@ -479,7 +478,7 @@ public:
 
 ***************************************************************************************************
 
-62. Unique Paths
+LC 62. Unique Paths
 
 A robot is located at the top-left corner of a m x n grid (marked 'Start' in the diagram below).
 
@@ -526,7 +525,7 @@ public:
 
 ***************************************************************************************************
 
-64. Minimum Path Sum
+LC 64. Minimum Path Sum
 
 Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right which minimizes the sum of all numbers along its path.
 
@@ -560,7 +559,7 @@ public:
 
 ***************************************************************************************************
 
-322. Coin Change
+LC 322. Coin Change
 
 You are given coins of different denominations and a total amount of money amount. Write a function to compute the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.
 
@@ -604,7 +603,7 @@ public:
 
 ***************************************************************************************************
 
-23. Merge k Sorted Lists
+LC 23. Merge k Sorted Lists
 Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
 
 class Solution {
@@ -649,6 +648,161 @@ public:
 };
 
 
+***************************************************************************************************
 
-****
+==========================================
+BEST TIME TO BUY AND SELL STOCKS QUESTIONS
+==========================================
+
+
+VERSION 1: A DP Solution
+=========
+
+LC 121. Best Time to Buy and Sell Stock
+
+Say you have an array for which the ith element is the price of a given stock on day i.
+
+If you were only permitted to complete at most one transaction (ie, buy one and sell one share of the stock), design an algorithm to find the maximum profit.
+
+Example 1:
+Input: [7, 1, 5, 3, 6, 4]
+Output: 5
+
+max. difference = 6-1 = 5 (not 7-1 = 6, as selling price needs to be larger than buying price)
+Example 2:
+Input: [7, 6, 4, 3, 1]
+Output: 0
+
+In this case, no transaction is done, i.e. max profit = 0.
+
+
+MAIN IDEA: Make a cache of size n
+Each cache entry is max profit if the stock was sold on that day lets say day i and was purchased on minimum value day in between (0 - i-1) days.
+
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if (prices.size() <= 0) {
+            return 0;
+        }
+        int cache[prices.size()];
+        int min_i = prices[0];
+        int pmax = INT_MIN;
+        
+        for (int i = 0; i < prices.size(); i++) {
+            cache[i] = max(0, prices[i] - min_i);
+            if (min_i > prices[i]) {
+                min_i = prices[i];
+            }
+            if (pmax < cache[i]) {
+                pmax = cache[i];
+            }
+        }
+        
+        return pmax;
+    }
+};
+
+
+
+VERSION 2: A greedy solution
+=========
+
+
+LC 122. Best Time to Buy and Sell Stock II
+
+Say you have an array for which the ith element is the price of a given stock on day i.
+
+Design an algorithm to find the maximum profit. You may complete as many transactions as you like (ie, buy one and sell one share of the stock multiple times). However, you may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
+
+
+MAIN IDEA: Greedy approach. Where starting from day 0, keep on adding to profit such that day i+1 value > day i
+
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if (prices.size() <= 1) {
+            return 0;
+        }
+        
+        int profit = 0;
+        for (int i = 1; i < prices.size(); i++) {
+            if (prices[i] > prices[i-1]) {
+                profit += (prices[i] - prices[i-1]);
+            }
+        }
+    
+        return profit;
+    }
+    
+};
+
+
+VERSION 3:
+=========
+
+LC 309. Best Time to Buy and Sell Stock with Cooldown
+
+Say you have an array for which the ith element is the price of a given stock on day i.
+
+Design an algorithm to find the maximum profit. You may complete as many transactions as you like (ie, buy one and sell one share of the stock multiple times) with the following restrictions:
+
+You may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
+After you sell your stock, you cannot buy stock on next day. (ie, cooldown 1 day)
+Example:
+
+prices = [1, 2, 3, 0, 2]
+maxProfit = 3
+transactions = [buy, sell, cooldown, buy, sell]
+
+
+MAIN IDEA: In comments below
+
+
+class Solution {
+public:
+    int maxProfit(vector<int>& v) {
+        int has1_sell;
+        int has1_donothing;
+        int has0_buy;
+        int has0_donothing;
+    
+        if (v.size() < 2) {
+            return 0;
+        }
+        // On every day i can take 1 of these above 4 decisions. The profit will be max of
+        // doing these activities up until and including the last day.
+    
+        // for day 0, init these paths;
+    
+        has1_sell = 0; // because it's not possible to sell on 1st day.
+        has1_donothing = -v[0]; // because on day 2, to have this option valid it means that stock was acquired earlier. That's why acquire price of day 1 is added.
+        has0_buy = -v[0]; // cost of acquiring the stock on day 1.
+        has0_donothing = 0; // profit will be 0 since no order executed.
+    
+        for (int i = 1; i < v.size(); i++) {
+            auto lhas0_buy = -v[i] + has0_donothing;
+            auto lhas0_donothing = max(has0_donothing, has1_sell);
+            auto lhas1_sell = v[i] + max(has1_donothing, has0_buy);
+            auto lhas1_donothing = max(has1_donothing, has0_buy);
+            
+            has1_sell = lhas1_sell;
+            has1_donothing = lhas1_donothing;
+            has0_buy = lhas0_buy;
+            has0_donothing = lhas0_donothing;
+        }
+        return max(has1_sell, has0_donothing);
+    }
+};
+
+
+***************************************************************************************************
+
+
+
+===========================
+BACKTRACKING
+===========================
+
+
 
