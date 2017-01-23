@@ -1504,4 +1504,55 @@ public:
 ***************************************************************************************************
 
 
+================
+ARRAY
+================
 
+
+LC 215. Kth Largest Element in an Array
+
+Find the kth largest element in an unsorted array. Note that it is the kth largest element in the sorted order, not the kth distinct element.
+
+For example,
+Given [3,2,1,5,6,4] and k = 2, return 5.
+
+Note: 
+You may assume k is always valid, 1 ≤ k ≤ array's length.
+
+
+MAIN IDEA:
+2 ways:
+1st : Headp based solution. Maintain a min heap of size k, and for all elements (k+1 -> n), pop min element and push the new element in the heap.
+2nd : Quick select algorithm, choose mid/randomly a value as pivot and move all elements < pivot to left and all elements > pivot to right. and so on.
+
+class Solution {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        if (nums.size() == 0 || k <= 0 || nums.size() < k) {
+            return -1;
+        }
+        
+        multiset<int> s;
+        vector<int>::iterator itr = nums.begin();
+        while((itr - nums.begin()) < k) {
+            s.insert(*itr);
+            itr++;
+        }
+        
+        multiset<int>::iterator kmax = min_element(s.begin(), s.end());
+        
+        while (itr != nums.end()) {
+            if (*itr > *kmax) {
+                s.erase(kmax);
+                s.insert(*itr);
+                kmax = min_element(s.begin(), s.end());
+            }
+            itr++;
+        }
+        
+        return *kmax;
+    }
+};
+
+
+***************************************************************************************************
