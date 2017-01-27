@@ -600,8 +600,12 @@ public:
 };
 
 
-
 ***************************************************************************************************
+
+
+===========
+LINKED LIST
+===========
 
 
 LC 160. Intersection of Two Linked Lists
@@ -1555,4 +1559,76 @@ public:
 };
 
 
+
 ***************************************************************************************************
+
+=======================
+GENERIC ARRAY QUESTIONS
+=======================
+
+
+LC 339. Nested List Weight Sum
+
+Given a nested list of integers, return the sum of all integers in the list weighted by their depth.
+
+Each element is either an integer, or a list -- whose elements may also be integers or other lists.
+
+Example 1:
+Given the list [[1,1],2,[1,1]], return 10. (four 1's at depth 2, one 2 at depth 1)
+
+Example 2:
+Given the list [1,[4,[6]]], return 27. (one 1 at depth 1, one 4 at depth 2, and one 6 at depth 3; 1 + 4*2 + 6*3 = 27)
+
+
+MAIN IDEA:
+Inspect each element at a time, starting from last or starting from first.
+    If int, then sum = intval*current_depth + recursive(remaining array - intval)
+    If list, then sum = recursive(list, current_depth + 1) + recursive(remaining array - list)
+
+
+/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * class NestedInteger {
+ *   public:
+ *     // Return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     bool isInteger() const;
+ *
+ *     // Return the single integer that this NestedInteger holds, if it holds a single integer
+ *     // The result is undefined if this NestedInteger holds a nested list
+ *     int getInteger() const;
+ *
+ *     // Return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // The result is undefined if this NestedInteger holds a single integer
+ *     const vector<NestedInteger> &getList() const;
+ * };
+ */
+class Solution {
+public:
+    int depthSum(vector<NestedInteger>& nestedList) {
+        int depth = 1;
+        return depthSum(nestedList, depth);
+    }
+    
+    int depthSum(vector<NestedInteger>& nestedList, int depth) {
+        if (nestedList.empty()) {
+            return 0;
+        }
+        int local_sum = 0;
+        if (nestedList[nestedList.size()-1].isInteger()) {
+            local_sum = nestedList[nestedList.size()-1].getInteger() * depth;
+        } else {
+            auto list = nestedList[nestedList.size()-1].getList();
+            vector<NestedInteger> vlast(list.begin(), list.end());
+            local_sum = depthSum(vlast, depth + 1);
+        }
+        nestedList.erase(nestedList.end()-1);
+        return local_sum + depthSum(nestedList,depth);
+    }
+};
+
+
+***************************************************************************************************
+
+
+
