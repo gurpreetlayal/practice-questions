@@ -1631,4 +1631,217 @@ public:
 ***************************************************************************************************
 
 
+LC 156. Binary Tree Upside Down
+
+Given a binary tree where all the right nodes are either leaf nodes with a sibling (a left node that shares the same parent node) or empty, flip it upside down and turn it into a tree where the original right nodes turned into left leaf nodes. Return the new root.
+
+For example:
+Given a binary tree {1,2,3,4,5},
+    1
+   / \
+  2   3
+ / \
+4   5
+return the root of the binary tree [4,5,2,#,#,3,1].
+   4
+  / \
+ 5   2
+    / \
+   3   1  
+
+MAIN IDEA: pick [1,2,3] node in above diagram as example. move the left node clockwise and adjust pointers.
+
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* upsideDownBinaryTree(TreeNode* root) {
+        if (!root || !root->left) { return root; }
+        
+        TreeNode* newRoot = upsideDownBinaryTree(root->left);
+        
+        root->left->left = root->right;
+        root->left->right = root;
+        
+        root->left = nullptr;
+        root->right = nullptr;
+        return newRoot;
+    }
+};
+
+
+***************************************************************************************************
+
+LC 205. Isomorphic Strings
+
+Given two strings s and t, determine if they are isomorphic.
+
+Two strings are isomorphic if the characters in s can be replaced to get t.
+
+All occurrences of a character must be replaced with another character while preserving the order of characters. No two characters may map to the same character but a character may map to itself.
+
+For example,
+Given "egg", "add", return true.
+
+Given "foo", "bar", return false.
+
+Given "paper", "title", return true.
+
+Note:
+You may assume both s and t have the same length.
+
+
+class Solution {
+public:
+    bool isIsomorphic(string s, string t) {
+        vector<int> arr1(256,0);
+        vector<int> arr2(256,0);
+        for (int i = 0; i < s.size(); i++) {
+            if (arr1[s[i]] != arr2[t[i]]) {
+                    return false;
+            }
+            // record index when this character was last time seen in the array.
+            arr1[s[i]] = i+1;
+            arr2[t[i]] = i+1;
+        }
+        return true;
+    }
+};
+
+
+***************************************************************************************************
+
+
+LC 50. Pow(x, n)
+Implement Pow(x,n)
+
+MAIN IDEA: Use divide and conquer(similar to binary search)
+
+class Solution {
+public:
+    double myPow(double x, int n) {
+        if (n == 0) { return 1; }
+        if (abs(n) == 1) {
+            return (n >= 0) ? x : 1/x;
+        }
+        
+        double halfRes = myPow(x, n/2);
+        halfRes *= halfRes;
+        return (n%2) ? ((n >= 0) ? x*halfRes : (1/x)*halfRes) : halfRes;
+    }
+};
+
+
+***************************************************************************************************
+
+
+LC 297. Serialize and Deserialize Binary Tree
+
+Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network connection link to be reconstructed later in the same or another computer environment.
+
+Design an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work. You just need to ensure that a binary tree can be serialized to a string and this string can be deserialized to the original tree structure.
+
+For example, you may serialize the following tree
+
+    1
+   / \
+  2   3
+     / \
+    4   5
+as "[1,2,3,null,null,4,5]", just the same as how LeetCode OJ serializes a binary tree. You do not necessarily need to follow this format, so please be creative and come up with different approaches yourself.
+Note: Do not use class member/global/static variables to store states. Your serialize and deserialize algorithms should be stateless.
+
+ 
+
+MAIN IDEA: Do a preorder traversal of the tree, append root->val and then recurse for left and right subtree.  Mark non-leaf node's null child as # and special marker for a leaf node.
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Codec {
+public:
+
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        if (!root) { return string(); }
+        
+        string s;
+        serialize(root, s);
+        cout << s;
+        return s;
+    }
+    
+    void serialize(TreeNode* root, string& s) {
+        if (!root) { 
+            s.append("# ");
+            return;
+        }
+        if (!root->left && !root->right) { 
+            s.append(to_string(root->val) + "L" + " ");
+        }
+        else {
+            s.append(to_string(root->val) + " ");
+            serialize(root->left, s);
+            serialize(root->right, s);
+        }
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        int idx = 0;
+        return deserialize(data, idx);
+    }
+    
+    TreeNode* deserialize(string data, int& idx) {
+        if (idx >= data.size()) { return nullptr; }
+        
+        string s = getNext(data, idx);
+        if (s == "#") { return nullptr; }
+        bool leaf = false;
+        if (s[s.size()-1] == 'L') {
+            leaf = true;
+            s.erase(s.size()-1);
+        }
+        
+        TreeNode* root = new TreeNode(stoi(s));
+        if (leaf) {
+            return root;
+        }
+        
+        root->left = deserialize(data, idx);
+        root->right = deserialize(data, idx);
+        
+        return root;
+    }
+    
+    string getNext(string s, int& cur) {
+        int i = cur;
+        while(s[i] != ' ' && s[i] != '\0') {
+            i++;
+        }
+        string ret(s.begin() + cur, s.begin()+i);
+        
+        while(i < s.size() && s[i] == ' ') { i++; }
+        cur = i;
+        return ret;
+    }
+};
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec;
+// codec.deserialize(codec.serialize(root));
 
