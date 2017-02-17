@@ -99,7 +99,7 @@ Main Idea: Is to follow idea of merge sort. divide it in 2 halves, run the main 
 M(0, n) : run for M(0, n/2) , M(n/2+1, n) and then merge both results. keep pushing the intervals in a separate vector passed by argument to the main function.
 
 57. Insert Interval
-Main Idea: Figure out where to insert the interval. Using binary search. or as in leetcode solution O(n) just do linear search and put all nonoverlapping intervals first and then adjust new interval such that overlapping intervals are taken care of, then push removaining intervals to result vector.
+Main Idea: Figure out where to insert the interval. Using binary search. or as in leetcode solution O(n) just do linear search and put all nonoverlapping intervals first and then adjust new interval such that overlapping intervals are taken care of, then push remaining intervals to result vector.
 
 65. Valid Number
 Main Idea: iterate through string, at every point check for these flags
@@ -200,6 +200,42 @@ public class Solution {
 
 76. Minimum Window Substring
 Main Idea: 2 pointers begin and end. 1 pointer pointing to next to begin(valid char w.r.t target). 1 hashmap to store target substring char occurences.
+
+// My answer based on below leetcode solution
+
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        vector<int> tmap(128,0);
+        for (auto& c: t) { tmap[c]++; }
+        
+        int begin = 0, end = 0, d = INT_MAX, head = 0;
+        int counter = t.size();
+        
+        while (end < s.size()) {
+            if (tmap[s[end++]]-- > 0) counter--; // this char is in t
+            print(tmap);
+            while (counter == 0) {
+                if ((end - begin) < d) {
+                    d = end - begin;
+                    head = begin;
+                }
+                if(tmap[s[begin++]]++ == 0)counter++;
+            }
+        }
+        return (d == INT_MAX) ? "" : s.substr(head, d);
+    }
+    
+    void print(vector<int> v) {
+        for (int i = 0; i < v.size(); i++) { if (v[i] != 0 ) cout << "(" << i << "," << v[i] << ")"; }
+        cout << endl;
+    }
+};
+
+
+
+
+
 
 leetcode solution
 string minWindow(string s, string t) {
