@@ -1,0 +1,17 @@
+JSON encoding/decoding.
+HTTP/HTTPS protocol internals.
+How is TCP/UDP and IP protocols used for client-server communication.
+General network routing/forwarding principals.
+DNS/DHCP basics.
+Apache web server/ngnix web server.
+Proxies/Reverse Proxies. How is it used in web-scale architecture.
+Load balancers.
+Caching(all levels - web server/between app server and db/db level/filesystem level)
+Memcache/Redis
+SQL Databases
+NoSQL Databases
+Scale out options like Consistent Hashing etc.
+Hashing algorithms like MD5/SHA1/SHA256
+...
+..
+.
