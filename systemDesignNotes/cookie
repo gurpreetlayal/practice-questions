@@ -1,0 +1,24 @@
+Cookies are data stored in memory or a file/db etc, which stores pertinent information
+related to a the client visiting a given website. The website stores the cookie locally
+on the client machine. One example could be the client side cookie storing a uuid unique
+to the client. When the client visits a website for example in this case amazon.com, this
+uuid is sent over to the amazon's web server which can figure out the shopping cart of
+this client. The shopping cart here could be stored in a backend DB or file system.
+
+There are different types of cookies. The one's which made sense to me were session
+cookie: which stores session related inmemory information on the client side. This
+goes away when the browser is closed. Example that comes to my mind right now is, lets
+say I logged into gmail. Even if I close the gmail tab and open another tab, and type
+gmail.com it takes me directly to my gmail account without asking me for username
+and password. But if I close the browser, i have to log back in - in case i open
+my account again(not sure about this functionality, but for the sake of example let's
+assume this). So this information, which lets me log back in is stored in session cookie
+
+Second type is persistent cookie, where the cookie information is persisted on the client
+side, for example in case of chrome is stored in cookie table in mysql3 db.
+
+Third one is secure cookie, which basically says that it'll be trasferred over only on a
+https session.
+
+It depends upon browser to choose to store any persistent cookie as encrypted for security
+reasons.
