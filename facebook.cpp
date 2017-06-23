@@ -43,9 +43,6 @@ public:
 
 
 
-
-
-
 301. Remove Invalid Parentheses
 Remove the minimum number of invalid parentheses in order to make the input string valid. Return all possible results.
 
@@ -751,16 +748,17 @@ public:
         int mid = 1;
         // start 3 pointers i j n.
         // i represents top of bottom array.
-        // j represents start of middle array.
+        // j represents currently inspected element, should be
+        // somewhere in the middle array.
         // n represents bottom of top array.
         int i = 0, j = 0, n = A.size()-1;
         
-        /*
-        equal to because, in case last time swap(A, j, n) happened
-        then suppose the value swapped is less than mid, so loop
-        should run one more time to move it over to i area.
-        */
         while (j <= n) {
+            // case if: i -> first non red or first white element.[end of red array]
+            // since j is less than mid, means j is red so swap i with j.
+            // now j becomes white and i becomes red. do i++ so that
+            // boundary of red element array is increased to handle newly added
+            // element. move j, since now we inspect next element.
             if (A[j] < mid) {
                 swap(A, i, j);
                 i++;

@@ -23,16 +23,6 @@ void addEdge(Graph& g, int s, int d) {
     g.vertices[s-1].neighbors.push_back(g.vertices[d-1]);
 }
 
-void dfsrecur(Graph& g, int sidx, set<int>& visited, vector<int>& order) {
-    visited.insert(sidx);
-    order.push_back(sidx);
-    for (auto& n : g.vertices[sidx-1].neighbors) {
-        if (visited.find(n.val) == visited.end()) {
-            dfsrecur(g, n.val, visited, order);
-        }
-    }
-}
-
 // DFS is equivalent to pre-order traversal in trees.
 void printdfs(Graph& g, int sidx) {
     vector<int> order;
@@ -43,6 +33,16 @@ void printdfs(Graph& g, int sidx) {
         cout << o << " ";
     }
     cout << endl;
+}
+
+void dfsrecur(Graph& g, int sidx, set<int>& visited, vector<int>& order) {
+    visited.insert(sidx);
+    order.push_back(sidx);
+    for (auto& n : g.vertices[sidx-1].neighbors) {
+        if (visited.find(n.val) == visited.end()) {
+            dfsrecur(g, n.val, visited, order);
+        }
+    }
 }
 
 // Use queue - same as tree level order traversal

@@ -104,6 +104,10 @@ Given a n x n matrix where each of the rows and columns are sorted in ascending 
 
 Note that it is the kth smallest element in the sorted order, not the kth distinct element.
 
+
+Main Idea: Use quick select algorithm.
+
+
 class Solution {
 public:
     int kthSmallest(vector<vector<int>>& m, int k) {
@@ -118,11 +122,11 @@ public:
             int mid = se + (ee - se)/2;
             int num = 0;
             for (int i = 0; i < m.size(); i++) {
-                // calculate number of elements smaller than mid.
+                // calculate number of elements smaller than or equal to mid.
                 // lets say 3 elements are less than mid, so this api will
-                // return 3. (0,1,2,3) [3] being mid, but here because 0 is overlooked
-                // so whatever upper_bound returns can be said returns number of numbers
-                // less than mid.
+                // return 3. upper_bound() returns iterator to first element
+                // which is greater than mid. So (upp_bound_return_iter - m[i].begin())
+                // equals to number of elements smaller than mid.
                 num += (upper_bound(m[i].begin(), m[i].end(), mid) - m[i].begin());
             }
             
@@ -1511,6 +1515,36 @@ public:
 ================
 ARRAY
 ================
+
+
+Quick Select algorithm to find kth smallest element in an array
+
+Main idea picked from quick sort algorithm's partition routine.
+
+Helpful Video: Demonstrates quicksort and partition function used in quicksort
+https://youtu.be/aQiWF4E8flQ
+
+int partition (vector<int> a, int l, int r) {
+    int pivot = a[r];
+    int wall = l;
+
+    for (int j = l; j < r; j++) {
+        if (a[j] <= pivot) {
+            // since the element is smaller, move it to the left of the wall.
+            // this is done by swapping cur_element with wall element
+            // and moving the wall by 1 to right.
+            swap(a, wall, j);
+            wall++;
+        }
+    }
+
+    // now put pivot element in correct index position, where wall is currently standing.
+    // this is the correct index position for the pivot element in the final sorted array.
+    // so if wall is 10, so that means it's 10 smallest element in array. if k is 5, we
+    // recurse and re call partition function for range(l, wall-1).
+    swap(a, wall, r);
+    return wall;
+}
 
 
 LC 215. Kth Largest Element in an Array
