@@ -3,6 +3,7 @@ HTTP/HTTPS protocol internals.
 How is TCP/UDP and IP protocols used for client-server communication.
 Flow control - Token bucket algorithm
 General network routing/forwarding principals.
+System monitoring and instrumentation for managing large clusters. What all techniques can be used.
 DNS/DHCP basics.
 Apache web server/ngnix web server.
 Proxies/Reverse Proxies. How is it used in web-scale architecture.
@@ -14,6 +15,6 @@ NoSQL Databases
 Scale out options like Consistent Hashing etc.
 Hashing algorithms like MD5/SHA1/SHA256
 Designing Relational database tables and schemas.
-...
-..
-.
+Read git architecture, how it manages diffs etc.
+Security aspects of large scale system. User Authentication and Authorization or Access Control.
+
