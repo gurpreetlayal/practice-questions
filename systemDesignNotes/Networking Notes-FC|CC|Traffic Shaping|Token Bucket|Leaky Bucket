@@ -1,0 +1,38 @@
+- Traffic Shaping and Traffic Policing using Leaky Bucket and Token Bucket algorithms.
+
+Whenver there is a need to control the flow of traffic/flow of packets, we can use either leaky bucket or token bucket algorithms.
+
+Leaky Bucket
+============
+
+There's a fixed size bucket, which can maintain at max N packets at a time. There's a rate R at which the packets are leaked
+from the bucket. So if the bucket is not full, you can add more packets to it. Otherwise, either you can drop the packet or
+if want to, implement a temporary buffer to hold the packet until the bucket becomes available. Leaky bucket primary use case
+is to shape a bursty traffic into a smooth traffic rate. You can burstily add packets at random rates to the bucket, but the
+exit of packets from the bucket is at a smooth pre-defined rate. Implementation wise you can implement bucket as a fixed size 
+queue which'll hold the packets. One thread can inject packets to the bucket, another thread can remove R packets per second.
+
+
+Token Bucket
+============
+Is also a traffic shaper but slightly different from leaky bucket in a sense that it doesn't actually hold the packets. It is
+a simple counter where each unit is a token. The token bucket initally has N tokens, and keep getting filled at a rate R tokens/sec
+for example. Now when the traffic comes, before admitting it'll check how many tokens are there in the bucket. If the number
+of tokens required to admit the traffic are there, it'll decrement those tokens from the bucket and the traffic will be admitted.
+If not, the traffic will just wait in the queue for enough tokens to get produced. Another way it is different from leaky bucket
+is in the sense that, it does police the traffic but there can still be some burstiness in the egress traffic. Since it all
+depends how many tokens are in the bucket, if there are more a burst of traffic will be admitted and then rest of the traffic
+waits for new tokens to get produced.
+
+
+
+- Flow control in TCP uses Sliding window protocol
+
+- Congestion control used Additive Increase Multiplicative Decrease algorithm.
+
+Major difference between flow control and congestion control is that flow control is done before shit could happen.
+Congestion control is save my ass scheme. Shit has already happend, now take measures. For example, the way it is done
+in networks is, if the acknowledgement doesn't come that's one was tx side can presume that network is congested. Whereas
+in Flow control, the rx side, sends its window size with every ack. So on every ack it tells sender that rx can accomodate
+x many packets. So it's an ongoing control, sort of feedback based flow control.
+
