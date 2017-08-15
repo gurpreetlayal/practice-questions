@@ -72,9 +72,37 @@ void printbfs(Graph& g, int sidx) {
     cout << endl;
 }
 
-// Topological ordering is do post order traversal(slightly changed dfs, since dfs is pre order)  and reverse the order.
-void printtopo(Graph& g) {
-
+// Topological ordering is do post order traversal(slightly changed dfs, since dfs is pre order) and reverse the order.
+// For reversing you can use a stack. So instead of printing the node right away during a post order dfs,
+// just push into the stack. And at the end, print the contents of the stack.
+// 
+// while implementing, choose recursive implementation. That is much more intuitive than iterative topological sorting.
+void printtopo(Graph& g, int sidx) {
+    //pseudocode something like this
+    set<int> visited;
+    
+    stack<int> tstack;
+    stack<int> res;
+    
+    push sidx->tstack;
+    push sidx->visited;
+    
+    while (!tstack.empty()) {
+        int top = tstack.top();
+        for (all neighbors of top) {
+            if (neighbor not visited) {
+                push neighbor into the stack;
+            }
+        }
+        if (all of the neighbors already visited) {
+            res.push_back(top);
+            tstack.pop();
+        }
+        
+    }
+    
+    vector<int> vres(res.begin(), res.end());
+    return vres;
 }
 
 int main () {
